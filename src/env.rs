@@ -19,6 +19,8 @@ const ACCEPT_HTTP1: &str = "TS_ACCEPT_HTTP1";
 
 const SERVICE_ADDRESS: &str = "TS_SERVICE_ADDRESS";
 
+const SERVICE_URL: &str = "TC_SERVICE_URL";
+
 pub fn concurrency_limit_per_connection(namespace: impl Display) -> Result<Option<usize>, Error> {
     let key = format!("{namespace}_{CONCURRENCY_LIMIT_PER_CONNECTION}");
     Ok(match env_util::get(&key).optional_checked()? {
@@ -137,4 +139,9 @@ pub fn service_address(namespace: impl Display) -> Result<SocketAddr, Error> {
         .required_checked()?
         .then_try_fromstr_into()?
         .into_inner())
+}
+
+pub fn service_url(namespace: impl Display) -> Result<String, Error> {
+    let key = format!("{namespace}_{SERVICE_URL}");
+    Ok(env_util::get(&key).required_checked()?.into_inner())
 }
