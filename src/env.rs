@@ -1,6 +1,6 @@
 use crate::error::Error;
 
-use std::{fmt::Display, time::Duration};
+use std::{fmt::Display, net::SocketAddr, time::Duration};
 
 use env_util;
 
@@ -16,6 +16,8 @@ const TCP_KEEPALIVE: &str = "TS_TCP_KEEPALIVE";
 const TCP_NODELAY: &str = "TS_TCP_NODELAY";
 const MAX_FRAME_SIZE: &str = "TS_MAX_FRAME_SIZE";
 const ACCEPT_HTTP1: &str = "TS_ACCEPT_HTTP1";
+
+const SERVICE_ADDRESS: &str = "TS_SERVICE_ADDRESS";
 
 pub fn concurrency_limit_per_connection(namespace: impl Display) -> Result<Option<usize>, Error> {
     let key = format!("{namespace}_{CONCURRENCY_LIMIT_PER_CONNECTION}");
@@ -127,4 +129,12 @@ pub fn accept_http1(namespace: impl Display) -> Result<Option<bool>, Error> {
         Some(v) => Some(v.then_try_fromstr_into()?.into_inner()),
         None => None,
     })
+}
+
+pub fn service_address(namespace: impl Display) -> Result<SocketAddr, Error> {
+    let key = format!("{namespace}_{SERVICE_ADDRESS}");
+    Ok(env_util::get(&key)
+        .required_checked()?
+        .then_try_fromstr_into()?
+        .into_inner())
 }
